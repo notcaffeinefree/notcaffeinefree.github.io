@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Document</title>
+	<script src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.10.3/moment.min.js"></script>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.4.0/moment-timezone-with-data.min.js"></script>
+	<script src="https://rawgit.com/igorescobar/jQuery-Mask-Plugin/master/src/jquery.mask.js"></script>
+	<style>
+		@import url(http://fonts.googleapis.com/css?family=Open+Sans);
+		body {
+		  font-family: 'Open Sans';
+		  width: 100%;
+		  text-align: center;
+		  margin: 100px auto 0;
+		}
+		#date {
+		  font-size: 50px;
+		  margin: 0 0 70px 0;
+		}
+
+		div {
+		  display: inline-block;
+		  padding-right: 40px;
+		}
+
+		label {
+		  display: block;
+		}
+
+		input {
+		  width: 130px;
+		}
+
+		#leaveTime {
+		  width: 160px;
+		}
+
+		#note, #resultNote {
+		  font-size: 12px;
+		}
+
+		#result {
+		  font-size: 20px;
+		}
+
+		#resultNote {
+			display: none;
+		}
+	</style>
+	<script>
+		$(function() {
+			var format, time, currentTime, ms, d, s, oldDate;
+
+			var startDate = '2015/07/13 00:00:00';
+
+			function getTime() {
+			    format = 'YYYY/MM/DD HH:mm:ss';
+			    time = moment().format('YYYY/MM/DD HH:mm:ss');
+			    currentTime = moment(time, format).tz("America/New_York").format('YYYY/MM/DD HH:mm:ss');
+			    ms = moment(currentTime, "YYYY/MM/DD HH:mm:ss").diff(moment(startDate, "YYYY/MM/DD HH:mm:ss"));
+			    d = moment.duration(ms);
+			    s = Math.floor(d.asHours()) + moment.utc(ms);
+			    oldDate = moment(s / (1 / 60)).format('MMMM DD, 1500 hh:mm a');
+			    document.getElementById('date').innerHTML = oldDate;
+			    setTimeout(getTime, 1000);
+			}
+
+			getTime();
+
+			$('#leaveTime').mask('00/00/0000 00:00:00');
+
+			$("#submit").on('click', function() {
+			  var distance = $("#distance").val();
+			  var speed = $("#speed").val();
+			  var leaveTime = $("#leaveTime").val();
+			  var travelTime = (distance/speed)/60;
+			  var currentTime = moment().format('YYYY/MM/DD hh:mm:ss');
+			  var endTime = moment(currentTime).add(travelTime, 'hours').format("MM/DD/YYYY HH:mm a");
+			  $("#result").text("Arrive at: " + endTime);
+			  $("#resultNote").show();
+			});
+		});
+	</script>
+</head>
+<body>
+	<p>Current in-game date & time:</p>
+	<p id="date"></p>
+	<div>
+	  <label for="leaveTime">Depart Time (real time, UTC-5)</label>
+	  <input type="text" id="leaveTime" placeholder="MM/DD/YYYY HH:MM" />
+	</div>
+	<div>
+	  <label for="distance">Distance</label>
+	  <input type="text" id="distance" />
+	</div>
+	<div>
+	  <label for="speed">Speed (X/hour)</label>
+	  <input type="text" id="speed" />
+	</div>
+	<p id="note">*Make sure distance and speed are the same distance unit!</p>
+	<input type="button" value="Calculate" id="submit"/>
+	<p id="result"></p>
+	<p id="resultNote">Does not take into account stopping for rest</p>
+</body>
+</html>
