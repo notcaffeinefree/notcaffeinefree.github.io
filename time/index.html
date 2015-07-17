@@ -118,10 +118,11 @@
 			    ms = moment(currentTime, "YYYY/MM/DD HH:mm:ss").diff(moment(startDate, "YYYY/MM/DD HH:mm:ss"));
 			    d = moment.duration(ms);
 			    s = Math.floor(d.asHours()) + moment.utc(ms);
-			    /*timeFrom = moment(startDate).from(currentTime, true).split(' ')[0];
+			    timeFrom = moment(startDate).from(currentTime, true).split(' ')[0];
 			    yearLastNum = (timeFrom / 6) | 0;
-			    year = 1500 + yearLastNum;*/
+			    year = 1500 + yearLastNum;
 			    oldDate = moment(s / (1 / 60)).format('MMMM DD, 1500 hh:mm a');
+			    oldDate = oldDate.replace('1500', year);
 			    document.getElementById('date').innerHTML = oldDate;
 			    setTimeout(getTime, 1000);
 			}
@@ -130,14 +131,26 @@
 
 			$('#leaveTime').mask('00/00/0000 00:00:00');
 
-			$("#submit").on('click', function() {
-			  var distance = $("#distance").val();
-			  var speed = $("#speed").val();
-			  var leaveTime = $("#leaveTime").val();
-			  var endTime = moment(leaveTime).add((((distance/speed)*24)/60)*3600000, 'milliseconds').format("MM/DD/YYYY hh:mm a");
-			  $("#result").text("Arrive at: " + endTime);
-			  $("#resultNote").show();
+			$("#distance, #speed, #leaveTime").on('input', function() {
+				if ($("#leaveTime").val() != "" && $("#distance").val() != "" && $("#speed").val() != "") {
+					update();
+				}
 			});
+
+			$("#submit").on('click', function() {
+				update();
+			});
+
+			function update() {
+				var distance = $("#distance").val();
+				var speed = $("#speed").val();
+				var leaveTime = $("#leaveTime").val();
+				var endTime = moment(leaveTime).add((((distance/speed)*24)/60)*3600000, 'milliseconds').format("MM/DD/YYYY hh:mm a");
+				var fromNow = moment(endTime).fromNow();
+				fromNow = fromNow.replace('in', 'in about');
+				$("#result").html("Arrive at: " + endTime + "<br>(" + fromNow + ")");
+				$("#resultNote").show();
+			}
 		});
 	</script>
 </head>
