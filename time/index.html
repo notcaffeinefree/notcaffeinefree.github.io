@@ -26,15 +26,70 @@
 		}
 
 		label {
-		  display: block;
+		  display: inline;
 		}
 
 		input {
 		  width: 130px;
+		  display: block;
+		  padding: 5px;
+		  margin-top: 5px;
+		  text-align: center;
+		}
+
+		#submit {
+			margin: 0 auto;
+			width: 90px;
 		}
 
 		#leaveTime {
 		  width: 160px;
+		}
+
+		#help {
+			position: relative;
+			display: inline-block;
+			width: 16px;
+			height: 16px;
+			background: url('help.png') 0 0 no-repeat;
+			cursor: pointer;
+			margin-left: -35px;
+		}
+
+		#helpInfo {
+			display: none;
+			position: absolute;
+			top: -70px;
+			left: 30px;
+			padding: 10px;
+			text-align: left;
+			border: 1px solid rgb(180,180,180);
+			width: 200px;
+		}
+
+		#triangle {
+			display: none;
+			width: 0;
+			height: 0;
+			border-top: 10px solid transparent;
+			border-bottom: 10px solid transparent;
+			border-right: 10px solid rgb(180,180,180);
+			position: absolute;
+			left: -20px;
+			top: -2px;
+		}
+
+		#help:hover #helpInfo {
+			display: inline-block;
+			box-shadow: 1px 0px 7px 1px rgba(140,140,140,0.3);
+		}
+		#help:hover #triangle {
+			display: block;
+		}
+
+		#helpInfo p {
+			font-size: 12px;
+			margin: 10px 0;
 		}
 
 		#note, #resultNote {
@@ -51,7 +106,7 @@
 	</style>
 	<script>
 		$(function() {
-			var format, time, currentTime, ms, d, s, oldDate;
+			var format, time, currentTime, ms, d, s, oldDate, timeFrom, yearLastNum, year;
 
 			var startDate = '2015/07/13 00:00:00';
 
@@ -62,6 +117,9 @@
 			    ms = moment(currentTime, "YYYY/MM/DD HH:mm:ss").diff(moment(startDate, "YYYY/MM/DD HH:mm:ss"));
 			    d = moment.duration(ms);
 			    s = Math.floor(d.asHours()) + moment.utc(ms);
+			    /*timeFrom = moment(startDate).from(currentTime, true).split(' ')[0];
+			    yearLastNum = (timeFrom / 6) | 0;
+			    year = 1500 + yearLastNum;*/
 			    oldDate = moment(s / (1 / 60)).format('MMMM DD, 1500 hh:mm a');
 			    document.getElementById('date').innerHTML = oldDate;
 			    setTimeout(getTime, 1000);
@@ -75,9 +133,7 @@
 			  var distance = $("#distance").val();
 			  var speed = $("#speed").val();
 			  var leaveTime = $("#leaveTime").val();
-			  var travelTime = (distance/speed)/60;
-			  var currentTime = moment().format('YYYY/MM/DD hh:mm:ss');
-			  var endTime = moment(currentTime).add(travelTime, 'hours').format("MM/DD/YYYY HH:mm a");
+			  var endTime = moment(leaveTime).add((((distance/speed)*24)/60)*3600000, 'milliseconds').format("MM/DD/YYYY hh:mm a");
 			  $("#result").text("Arrive at: " + endTime);
 			  $("#resultNote").show();
 			});
@@ -88,7 +144,7 @@
 	<p>Current in-game date & time:</p>
 	<p id="date"></p>
 	<div>
-	  <label for="leaveTime">Depart Time (real time, UTC-5)</label>
+	  <label for="leaveTime">Depart Time (real time)</label>
 	  <input type="text" id="leaveTime" placeholder="MM/DD/YYYY HH:MM" />
 	</div>
 	<div>
@@ -96,12 +152,24 @@
 	  <input type="text" id="distance" />
 	</div>
 	<div>
-	  <label for="speed">Speed (X/hour)</label>
+	  <label for="speed">Distance per day</label>
 	  <input type="text" id="speed" />
 	</div>
+	<span id="help">
+		<div id="triangle"></div>
+		<div id="helpInfo">
+			<p>Approximate Values:</p>
+			<p>Oxcat: 12km/day</p>
+			<p>Foot: 30km/day</p>
+			<p>Horse: 56km/day</p>
+			<p>Rapid Military March: 60km/day</p>
+			<p>Fast Carriage: 67km/day</p>
+			<p>Horse Relay: 250km/day</p>
+			<p>Values from <a href="http://orbis.stanford.edu/">here</a></p>
+		</div>
+	</span>
 	<p id="note">*Make sure distance and speed are the same distance unit!</p>
 	<input type="button" value="Calculate" id="submit"/>
 	<p id="result"></p>
-	<p id="resultNote">Does not take into account stopping for rest</p>
 </body>
 </html>
