@@ -115,16 +115,20 @@
 			    format = 'YYYY/MM/DD HH:mm:ss';
 			    time = moment().format('YYYY/MM/DD HH:mm:ss');
 			    currentTime = moment(time, format).tz("America/New_York").format('YYYY/MM/DD HH:mm:ss');
-			    ms = moment(currentTime, "YYYY/MM/DD HH:mm:ss").diff(moment(startDate, "YYYY/MM/DD HH:mm:ss"));
-			    d = moment.duration(ms);
-			    s = Math.floor(d.asHours()) + moment.utc(ms);
-			    timeFrom = moment(startDate).from(currentTime, true).split(' ')[0];
-			    yearLastNum = (timeFrom / 6) | 0;
-			    year = 1500 + yearLastNum;
-			    oldDate = moment(s / (1 / 60)).format('MMMM DD, 1500 hh:mm a');
-			    oldDate = oldDate.replace('1500', year);
-			    document.getElementById('date').innerHTML = oldDate;
-			    setTimeout(getTime, 1000);
+			    if (moment().day() == 0) {
+			    	document.getElementById('date').innerHTML = "Meta day!";
+			    } else {
+				    ms = moment(currentTime, "YYYY/MM/DD HH:mm:ss").diff(moment(startDate, "YYYY/MM/DD HH:mm:ss"));
+				    d = moment.duration(ms);
+				    s = Math.floor(d.asHours()) + moment.utc(ms) - 86400000;
+				    timeFrom = moment(startDate).from(currentTime, true).split(' ')[0];
+				    yearLastNum = (timeFrom / 5) | 0;
+				    year = 1500 + yearLastNum;
+				    oldDate = moment(s / (1 / 60)).format('MMMM DD, 1500 hh:mm a');
+				    oldDate = oldDate.replace('1500', year);
+				    document.getElementById('date').innerHTML = oldDate;
+				    setTimeout(getTime, 1000);
+				}
 			}
 
 			getTime();
